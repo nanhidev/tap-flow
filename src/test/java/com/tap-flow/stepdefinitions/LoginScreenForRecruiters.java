@@ -145,7 +145,7 @@ loginScreen.confirmPassword(confirmPassword);
 public void i_enter_in_the_email_field(String email) {
 loginScreen.enterEmail(email);
 }
-@When("the user enters {string}")
+// DUPLICATE: @When("the user enters {string}")
 public void the_user_enters(String username) {
 loginScreen.enterUsername(username);
 }
@@ -158,3 +158,4 @@ public void i_log_out() {
 loginScreen.logOut();
 }
 }
+// DUPLICATE GENERATION ATTEMPTED ON 2026-04-17 17:07:50.932135 - FILE ALREADY EXISTS
