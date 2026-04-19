@@ -5,15 +5,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FilePathTest {
 
     @Test
     public void shouldReturnConfigPropertyFilePath() {
+        // Given
         String expectedPath = "/src/test/resources/com/project/config/config.properties";
+
+        // When
         String actualPath = FilePath.getConfigPropertyFilePath();
+
+        // Then
         assertEquals(expectedPath, actualPath);
     }
 }

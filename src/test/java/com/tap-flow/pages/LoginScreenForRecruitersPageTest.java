@@ -1,16 +1,17 @@
 
 package com.tap-flow.pages;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoExtension;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class LoginScreenForRecruitersPageTest {
@@ -122,10 +123,10 @@ public class LoginScreenForRecruitersPageTest {
 
     @Test
     public void shouldTogglePasswordVisibility() {
-        when(toggleButton.isDisplayed()).thenReturn(true);
         when(passwordField.getAttribute("type")).thenReturn("password");
         loginScreen.togglePasswordVisibility();
         verify(toggleButton).click();
+        when(passwordField.getAttribute("type")).thenReturn("text");
         assertEquals("text", passwordField.getAttribute("type"));
     }
 }

@@ -2,16 +2,20 @@
 package com.project.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoExtension;
-
-import java.util.Properties;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigReaderTest {
@@ -20,101 +24,145 @@ class ConfigReaderTest {
     private ConfigReader configReader;
 
     @Mock
-    private Properties properties;
+    private FileInputStream fileInputStream;
+
+    @Mock
+    private File file;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        System.setProperty("user.dir", "testDir");
+        Mockito.when(file.exists()).thenReturn(true);
+        Mockito.when(file.canRead()).thenReturn(true);
+        Mockito.whenNew(File.class).withArguments("testDir/config.properties").thenReturn(file);
+        Mockito.when(fileInputStream.read(any(byte[].class))).thenReturn(-1);
+    }
 
     @Test
-    void shouldReturnBrowserProperty() {
-        when(properties.getProperty("browser")).thenReturn("chrome");
+    void shouldReturnBrowserWhenGetBrowserCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("browser", "chrome");
+        configReader.loadProperties();
         assertEquals("chrome", configReader.getBrowser());
     }
 
     @Test
-    void shouldReturnBaseUrlProperty() {
-        when(properties.getProperty("url")).thenReturn("http://localhost");
+    void shouldReturnBaseUrlWhenGetBaseUrlCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("url", "http://localhost");
+        configReader.loadProperties();
         assertEquals("http://localhost", configReader.getBaseUrl());
     }
 
     @Test
-    void shouldReturnImplicitWaitProperty() {
-        when(properties.getProperty("implicit.wait")).thenReturn("10");
+    void shouldReturnImplicitWaitWhenGetImplicitWaitCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("implicit.wait", "10");
+        configReader.loadProperties();
         assertEquals(10, configReader.getImplicitWait());
     }
 
     @Test
-    void shouldReturnExplicitWaitProperty() {
-        when(properties.getProperty("explicit.wait")).thenReturn("20");
+    void shouldReturnExplicitWaitWhenGetExplicitWaitCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("explicit.wait", "20");
+        configReader.loadProperties();
         assertEquals(20, configReader.getExplicitWait());
     }
 
     @Test
-    void shouldReturnHeadlessProperty() {
-        when(properties.getProperty("browser.headless")).thenReturn("true");
+    void shouldReturnHeadlessWhenIsHeadlessCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("browser.headless", "true");
+        configReader.loadProperties();
         assertEquals(true, configReader.isHeadless());
     }
 
     @Test
-    void shouldReturnEnvironmentProperty() {
-        when(properties.getProperty("environment")).thenReturn("staging");
+    void shouldReturnEnvironmentWhenGetEnvironmentCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("environment", "staging");
+        configReader.loadProperties();
         assertEquals("staging", configReader.getEnvironment());
     }
 
     @Test
-    void shouldReturnFrameworkTypeProperty() {
-        when(properties.getProperty("framework.type")).thenReturn("cucumber-junit");
-        assertEquals("cucumber-junit", configReader.getFrameworkType());
+    void shouldReturnFrameworkTypeWhenGetFrameworkTypeCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("framework.type", "cucumber-testng");
+        configReader.loadProperties();
+        assertEquals("cucumber-testng", configReader.getFrameworkType());
     }
 
     @Test
-    void shouldReturnTestRunnerProperty() {
-        when(properties.getProperty("test.runner")).thenReturn("junit");
+    void shouldReturnTestRunnerWhenGetTestRunnerCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("test.runner", "junit");
+        configReader.loadProperties();
         assertEquals("junit", configReader.getTestRunner());
     }
 
     @Test
-    void shouldReturnCucumberTagsProperty() {
-        when(properties.getProperty("cucumber.tags")).thenReturn("@smoke");
+    void shouldReturnCucumberTagsWhenGetCucumberTagsCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("cucumber.tags", "@smoke");
+        configReader.loadProperties();
         assertEquals("@smoke", configReader.getCucumberTags());
     }
 
     @Test
-    void shouldReturnFeaturePathProperty() {
-        when(properties.getProperty("cucumber.features.path")).thenReturn("src/test/resources/features");
+    void shouldReturnFeaturePathWhenGetFeaturePathCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("cucumber.features.path", "src/test/resources/features");
+        configReader.loadProperties();
         assertEquals("src/test/resources/features", configReader.getFeaturePath());
     }
 
     @Test
-    void shouldReturnGluePathProperty() {
-        when(properties.getProperty("cucumber.glue.path")).thenReturn("com.project.stepdefinitions");
-        assertEquals("com.project.stepdefinitions", configReader.getGluePath());
+    void shouldReturnGluePathWhenGetGluePathCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("cucumber.glue.path", "com.project.stepdefs");
+        configReader.loadProperties();
+        assertEquals("com.project.stepdefs", configReader.getGluePath());
     }
 
     @Test
-    void shouldReturnReportPathProperty() {
-        when(properties.getProperty("report.path")).thenReturn("reports/test-report");
-        assertEquals("reports/test-report", configReader.getReportPath());
+    void shouldReturnReportPathWhenGetReportPathCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("report.path", "target/reports");
+        configReader.loadProperties();
+        assertEquals("target/reports", configReader.getReportPath());
     }
 
     @Test
-    void shouldReturnScreenshotOnFailureProperty() {
-        when(properties.getProperty("screenshot.on.failure")).thenReturn("false");
+    void shouldReturnScreenshotOnFailureWhenIsScreenshotOnFailureCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("screenshot.on.failure", "false");
+        configReader.loadProperties();
         assertEquals(false, configReader.isScreenshotOnFailure());
     }
 
     @Test
-    void shouldReturnPlaywrightEnabledProperty() {
-        when(properties.getProperty("playwright.enabled")).thenReturn("true");
+    void shouldReturnPlaywrightEnabledWhenIsPlaywrightEnabledCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("playwright.enabled", "true");
+        configReader.loadProperties();
         assertEquals(true, configReader.isPlaywrightEnabled());
     }
 
     @Test
-    void shouldReturnVisualRegressionEnabledProperty() {
-        when(properties.getProperty("visual.regression.enabled")).thenReturn("false");
+    void shouldReturnVisualRegressionEnabledWhenIsVisualRegressionEnabledCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("visual.regression.enabled", "false");
+        configReader.loadProperties();
         assertEquals(false, configReader.isVisualRegressionEnabled());
     }
 
     @Test
-    void shouldReturnPlaywrightBrowserProperty() {
-        when(properties.getProperty("playwright.browser")).thenReturn("firefox");
-        assertEquals("firefox", configReader.getPlaywrightBrowser());
+    void shouldReturnPlaywrightBrowserWhenGetPlaywrightBrowserCalled() {
+        Properties properties = new Properties();
+        properties.setProperty("playwright.browser", "chrome");
+        configReader.loadProperties();
+        assertEquals("chrome", configReader.getPlaywrightBrowser());
     }
 }

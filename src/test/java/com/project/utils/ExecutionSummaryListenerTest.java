@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoExtension;
 import org.testng.ITestContext;
+import org.testng.ITestListener;
 import org.testng.ITestResult;
 
 import static org.mockito.Mockito.verify;
@@ -18,39 +19,48 @@ public class ExecutionSummaryListenerTest {
     private ExecutionSummaryListener listener;
 
     @Mock
-    private ITestResult testResult;
-
-    @Mock
     private ITestContext testContext;
 
+    @Mock
+    private ITestResult testResult;
+
     @Test
-    public void shouldIncrementPassedWhenTestSuccess() {
+    public void shouldIncrementPassedCountWhenTestSuccess() {
         listener.onTestSuccess(testResult);
-        // Verify the internal state is changed
-        // Note: Since we can't access private fields, we will just verify interactions
+        listener.onFinish(testContext);
+
+        // You would need to check the internal state, but since we can't, we verify the finish behavior
+        verify(testContext).getSuite().getResults();
     }
 
     @Test
-    public void shouldIncrementFailedWhenTestFailure() {
+    public void shouldIncrementFailedCountWhenTestFailure() {
         listener.onTestFailure(testResult);
-        // Verify the internal state is changed
+        listener.onFinish(testContext);
+
+        // You would need to check the internal state, but since we can't, we verify the finish behavior
+        verify(testContext).getSuite().getResults();
     }
 
     @Test
-    public void shouldIncrementSkippedWhenTestSkipped() {
+    public void shouldIncrementSkippedCountWhenTestSkipped() {
         listener.onTestSkipped(testResult);
-        // Verify the internal state is changed
+        listener.onFinish(testContext);
+
+        // You would need to check the internal state, but since we can't, we verify the finish behavior
+        verify(testContext).getSuite().getResults();
     }
 
     @Test
-    public void shouldPrintSummaryOnFinish() {
+    public void shouldPrintSummaryWhenFinishCalled() {
         listener.onTestSuccess(testResult);
         listener.onTestFailure(testResult);
         listener.onTestSkipped(testResult);
         
         listener.onFinish(testContext);
-        
-        // Verify that the print statements were called
-        // Note: Stdout capturing can be done if necessary for the test.
+
+        // Verify that the summary printing occurs. Since we can't verify console output directly, 
+        // this is a placeholder for the intended behavior.
+        // You would typically use a logging framework or a different method to capture output.
     }
 }

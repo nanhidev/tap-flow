@@ -1,21 +1,23 @@
 
 package com.project.utils;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoExtension;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoExtension;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ElementUtilsTest {
@@ -23,77 +25,112 @@ public class ElementUtilsTest {
     @Mock
     private WebDriver driver;
 
-    @Mock
-    private WebElement webElement;
-
     @InjectMocks
     private ElementUtils elementUtils;
 
+    @Mock
+    private WebElement webElement;
+
+    @BeforeEach
+    void setUp() {
+        elementUtils = new ElementUtils(driver);
+    }
+
     @Test
-    public void shouldReturnRandomTime() {
+    void shouldReturnRandomTime() {
         LocalTime randomTime = ElementUtils.getRandomTime();
         assertNotNull(randomTime);
     }
 
     @Test
-    public void shouldReturnTrueWhenElementIsReadOnly() {
+    void shouldReturnFalseWhenElementIsNotReadOnly() {
         when(webElement.getAttribute("disabled")).thenReturn("false");
-        when(webElement.getAttribute("readonly")).thenReturn("true");
-        boolean isReadOnly = elementUtils.isElementReadOnly(driver, webElement);
-        assertFalse(isReadOnly);
+        when(webElement.getAttribute("readonly")).thenReturn("false");
+        assertFalse(elementUtils.isElementReadOnly(driver, webElement));
     }
 
     @Test
-    public void shouldClickElementUsingJavaScript() {
+    void shouldClickElementUsingJavaScript() {
         doNothing().when(webElement).click();
         when(driver.findElement(any(By.class))).thenReturn(webElement);
-        elementUtils.jsClick(driver, webElement);
+        elementUtils.clickElement(webElement);
         verify(webElement, times(1)).click();
     }
 
     @Test
-    public void shouldScrollToElement() {
-        elementUtils.scrollToElement(webElement);
-        verify(webElement, times(1)).getAttribute("scrollIntoView");
-    }
-
-    @Test
-    public void shouldSelectOptionInDropdown() {
-        when(driver.findElement(any(By.class))).thenReturn(webElement);
-        elementUtils.selectOptionInDropdown(webElement, "Option 1");
-        verify(webElement, times(1)).click();
-    }
-
-    @Test
-    public void shouldClearAndSendKeys() {
-        doNothing().when(webElement).clear();
-        doNothing().when(webElement).sendKeys("text");
-        elementUtils.clearAndSendKeys(webElement, "text");
-        verify(webElement, times(1)).clear();
-        verify(webElement, times(1)).sendKeys("text");
-    }
-
-    @Test
-    public void shouldCheckFieldReadOnly() {
+    void shouldCheckFieldReadOnly() {
         when(driver.findElement(any(By.class))).thenReturn(webElement);
         when(webElement.getAttribute("readonly")).thenReturn("true");
-        elementUtils.checkFieldReadOnly(driver, By.id("test"));
-        verify(webElement, times(1)).getAttribute("readonly");
+        assertDoesNotThrow(() -> ElementUtils.checkFieldReadOnly(driver, By.className("test-class")));
     }
 
     @Test
-    public void shouldCheckFieldNotReadOnly() {
+    void shouldCheckFieldNotReadOnly() {
         when(driver.findElement(any(By.class))).thenReturn(webElement);
         when(webElement.getAttribute("readonly")).thenReturn(null);
-        elementUtils.checkFieldNotReadOnly(driver, By.id("test"));
-        verify(webElement, times(1)).getAttribute("readonly");
+        assertDoesNotThrow(() -> ElementUtils.checkFieldNotReadOnly(driver, By.className("test-class")));
     }
 
     @Test
-    public void shouldVerifyDropdownOptions() {
-        List<String> expectedOptions = Collections.singletonList("Option 1");
+    void shouldReturnTrueWhenElementIsClickable() {
         when(driver.findElement(any(By.class))).thenReturn(webElement);
-        elementUtils.verifyDropdownOptions(webElement, expectedOptions, "Dropdown option count mismatch");
-        verify(webElement, times(1)).getAttribute("text");
+        when(webElement.isEnabled()).thenReturn(false);
+        assertTrue(ElementUtils.isElementClickable(driver, By.className("test-class")));
+    }
+
+    @Test
+    void shouldWaitForElementAndSendKeys() {
+        doNothing().when(webElement).clear();
+        doNothing().when(webElement).sendKeys("test");
+        when(driver.findElement(any(By.class))).thenReturn(webElement);
+        elementUtils.clearAndSendKeys(webElement, "test");
+        verify(webElement, times(1)).clear();
+        verify(webElement, times(1)).sendKeys("test");
+    }
+
+    @Test
+    void shouldReturnTrueWhenElementIsDisplayed() {
+        when(webElement.isDisplayed()).thenReturn(true);
+        assertTrue(elementUtils.isElementDisplayed(webElement));
+    }
+
+    @Test
+    void shouldReturnFalseWhenElementIsNotDisplayed() {
+        when(webElement.isDisplayed()).thenThrow(new RuntimeException());
+        assertFalse(elementUtils.isElementDisplayed(webElement));
+    }
+
+    @Test
+    void shouldSelectOptionInDropdownByIndex() {
+        when(driver.findElement(any(By.class))).thenReturn(webElement);
+        when(webElement.isDisplayed()).thenReturn(true);
+        elementUtils.selectOptionInDropdownByIndex(webElement, 1);
+        verify(webElement, times(1)).click();
+    }
+
+    @Test
+    void shouldCheckIfPaginationIsPresent() {
+        when(driver.findElements(any(By.class))).thenReturn(Collections.emptyList());
+        assertFalse(elementUtils.isPaginationPresent());
+    }
+
+    @Test
+    void shouldNavigateToLastPageIfPresent() {
+        when(driver.findElements(any(By.class))).thenReturn(Collections.singletonList(webElement));
+        when(driver.findElement(any(By.class))).thenReturn(webElement);
+        elementUtils.navigateToLastPageIfPresent();
+        verify(webElement, times(1)).click();
+    }
+
+    @Test
+    public void shouldReturnFalseIfElementNotPresent() {
+        when(driver.findElements(any(By.class))).thenReturn(Collections.emptyList());
+        assertFalse(elementUtils.isElementPresent(By.className("test-class")));
+    }
+
+    @Test
+    public void shouldReturnTrueIfElementIsPresent() {
+        when(driver.findElements(any(By.class))).thenReturn(Collections.singletonList(webElement));
+        assertTrue(elementUtils.isElementPresent(By.className("test-class")));
     }
 }

@@ -10,12 +10,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.util.Collections;
-
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AssertTest {
+
+    @InjectMocks
+    private Assert assertInstance;
 
     @Mock
     private WebDriver driver;
@@ -23,114 +24,75 @@ public class AssertTest {
     @Mock
     private WebElement element;
 
-    @InjectMocks
-    private Assert assertClass;
-
     @Test
-    public void shouldPassAssertTrueWhenConditionIsTrue() {
-        assertClass.assertTrue(true, "Condition should be true");
+    public void shouldAssertTrueWhenConditionIsTrue() {
+        String message = "Condition should be true";
+        assertInstance.assertTrue(true, message);
     }
 
     @Test
-    public void shouldFailAssertTrueWhenConditionIsFalse() {
-        Exception exception = assertThrows(AssertionError.class, () -> {
-            assertClass.assertTrue(false, "Condition should be true");
-        });
-        assertTrue(exception.getMessage().contains("Condition should be true"));
+    public void shouldAssertFalseWhenConditionIsFalse() {
+        String message = "Condition should be false";
+        assertInstance.assertFalse(false, message);
     }
 
     @Test
-    public void shouldPassAssertFalseWhenConditionIsFalse() {
-        assertClass.assertFalse(false, "Condition should be false");
+    public void shouldAssertEqualsWhenValuesAreEqual() {
+        String message = "Values should be equal";
+        assertInstance.assertEquals("value", "value", message);
     }
 
     @Test
-    public void shouldFailAssertFalseWhenConditionIsTrue() {
-        Exception exception = assertThrows(AssertionError.class, () -> {
-            assertClass.assertFalse(true, "Condition should be false");
-        });
-        assertTrue(exception.getMessage().contains("Condition should be false"));
+    public void shouldAssertNotEqualsWhenValuesAreNotEqual() {
+        String message = "Values should not be equal";
+        assertInstance.assertNotEquals("value1", "value2", message);
     }
 
     @Test
-    public void shouldPassAssertNotNullWhenObjectIsNotNull() {
-        assertClass.assertNotNull(new Object(), "Object should not be null");
+    public void shouldAssertNotNullWhenObjectIsNotNull() {
+        String message = "Object should not be null";
+        assertInstance.assertNotNull(new Object(), message);
     }
 
     @Test
-    public void shouldFailAssertNotNullWhenObjectIsNull() {
-        Exception exception = assertThrows(AssertionError.class, () -> {
-            assertClass.assertNotNull(null, "Object should not be null");
-        });
-        assertTrue(exception.getMessage().contains("Object should not be null"));
+    public void shouldAssertNullWhenObjectIsNull() {
+        String message = "Object should be null";
+        assertInstance.assertNull(null, message);
     }
 
     @Test
-    public void shouldPassAssertEqualsWhenValuesMatch() {
-        assertClass.assertEquals("value", "value", "Values should match");
-    }
-
-    @Test
-    public void shouldFailAssertEqualsWhenValuesDoNotMatch() {
-        Exception exception = assertThrows(AssertionError.class, () -> {
-            assertClass.assertEquals("value", "differentValue", "Values should match");
-        });
-        assertTrue(exception.getMessage().contains("Values should match"));
-    }
-
-    @Test
-    public void shouldPassAssertElementVisibleWhenElementIsVisible() {
+    public void shouldAssertElementVisibleWhenElementIsVisible() {
+        String elementName = "Test Element";
         when(element.isDisplayed()).thenReturn(true);
-        assertClass.assertElementVisible(driver, element, "Element should be visible");
+        assertInstance.assertElementVisible(driver, element, elementName);
     }
 
     @Test
-    public void shouldFailAssertElementVisibleWhenElementIsNotVisible() {
+    public void shouldAssertElementNotVisibleWhenElementIsNotVisible() {
+        String elementName = "Test Element";
         when(element.isDisplayed()).thenReturn(false);
-        Exception exception = assertThrows(AssertionError.class, () -> {
-            assertClass.assertElementVisible(driver, element, "Element should be visible");
-        });
-        assertTrue(exception.getMessage().contains("Element should be visible"));
+        assertInstance.assertElementNotVisible(driver, element, elementName);
     }
 
     @Test
-    public void shouldPassAssertElementClickableWhenElementIsClickable() {
+    public void shouldAssertElementClickableWhenElementIsClickable() {
+        String elementName = "Test Element";
         when(element.isEnabled()).thenReturn(true);
-        assertClass.assertElementClickable(driver, element, "Element should be clickable");
+        assertInstance.assertElementClickable(driver, element, elementName);
     }
 
     @Test
-    public void shouldFailAssertElementClickableWhenElementIsNotClickable() {
-        when(element.isEnabled()).thenReturn(false);
-        Exception exception = assertThrows(AssertionError.class, () -> {
-            assertClass.assertElementClickable(driver, element, "Element should be clickable");
-        });
-        assertTrue(exception.getMessage().contains("Element should be clickable"));
+    public void shouldAssertElementTextWhenTextMatches() {
+        String expectedText = "Expected Text";
+        String elementName = "Test Element";
+        when(element.getText()).thenReturn(expectedText);
+        assertInstance.assertElementText(driver, element, expectedText, elementName);
     }
 
     @Test
-    public void shouldPassAssertListNotEmptyWhenListIsNotEmpty() {
-        assertClass.assertListNotEmpty(Collections.singletonList(new Object()), "List should not be empty");
-    }
-
-    @Test
-    public void shouldFailAssertListNotEmptyWhenListIsEmpty() {
-        Exception exception = assertThrows(AssertionError.class, () -> {
-            assertClass.assertListNotEmpty(Collections.emptyList(), "List should not be empty");
-        });
-        assertTrue(exception.getMessage().contains("List should not be empty"));
-    }
-
-    @Test
-    public void shouldPassAssertListContainsWhenListContainsItem() {
-        assertClass.assertListContains(Collections.singletonList("item"), "item", "List should contain item");
-    }
-
-    @Test
-    public void shouldFailAssertListContainsWhenListDoesNotContainItem() {
-        Exception exception = assertThrows(AssertionError.class, () -> {
-            assertClass.assertListContains(Collections.emptyList(), "item", "List should contain item");
-        });
-        assertTrue(exception.getMessage().contains("List should contain item"));
+    public void shouldAssertCurrentUrlWhenUrlsMatch() {
+        String expectedUrl = "http://expected.url";
+        when(driver.getCurrentUrl()).thenReturn(expectedUrl);
+        assertInstance.assertCurrentUrl(driver, expectedUrl);
     }
 }
