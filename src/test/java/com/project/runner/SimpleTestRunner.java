@@ -18,6 +18,11 @@ package com.project.runner;
         }
     
     @Test(priority = 1)
+        public void runVieweventreport() {
+            runCucumberFeature("src/test/resources/com/tap-flow/features/ViewEventReport.feature");
+        }
+    
+    @Test(priority = 2)
         public void runSearchevents() {
             runCucumberFeature("src/test/resources/com/tap-flow/features/SearchEvents.feature");
         }
