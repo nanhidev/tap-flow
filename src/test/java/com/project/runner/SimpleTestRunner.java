@@ -13,21 +13,26 @@ package com.project.runner;
     public class TestRunner extends AbstractTestNGCucumberTests {
         
         @Test(priority = 0)
+        public void runVieweventstatus() {
+            runCucumberFeature("src/test/resources/com/tap-flow/features/ViewEventStatus.feature");
+        }
+    
+    @Test(priority = 1)
         public void runLoginscreenforrecruiters() {
             runCucumberFeature("src/test/resources/com/tap-flow/features/LoginScreenForRecruiters.feature");
         }
     
-    @Test(priority = 1)
+    @Test(priority = 2)
         public void runVieweventreport() {
             runCucumberFeature("src/test/resources/com/tap-flow/features/ViewEventReport.feature");
         }
     
-    @Test(priority = 2)
+    @Test(priority = 3)
         public void runSearchevents() {
             runCucumberFeature("src/test/resources/com/tap-flow/features/SearchEvents.feature");
         }
     
-    @Test(priority = 3)
+    @Test(priority = 4)
         public void runViewjobevents() {
             runCucumberFeature("src/test/resources/com/tap-flow/features/ViewJobEvents.feature");
         }
