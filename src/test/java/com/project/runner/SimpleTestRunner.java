@@ -27,6 +27,11 @@ package com.project.runner;
             runCucumberFeature("src/test/resources/com/tap-flow/features/SearchEvents.feature");
         }
     
+    @Test(priority = 3)
+        public void runViewjobevents() {
+            runCucumberFeature("src/test/resources/com/tap-flow/features/ViewJobEvents.feature");
+        }
+    
             
     private void runCucumberFeature(String featurePath) {
             String featureName = new File(featurePath).getName().replace(".feature", "");
